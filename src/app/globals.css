@@ -7,15 +7,64 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root.dark {
+  --background: #111827;
+  --foreground: #ededed;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 스무스한 트랜지션을 위한 기본 설정 */
+* {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* 입력 필드 포커스 효과 */
+input:focus {
+  transform: translateY(-1px);
+}
+
+/* 버튼 호버 효과 */
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* 버튼 액티브 효과 */
+button:active {
+  transform: translateY(1px);
+}
+
+/* 다크모드 기본 설정 */
+:root {
+  color-scheme: dark;
+}
+
+:root.light {
+  color-scheme: light;
+}
+
+/* 테마 전환 애니메이션 */
+.theme-toggle-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.theme-toggle-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.theme-toggle-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.theme-toggle-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 200ms, transform 200ms;
 }
