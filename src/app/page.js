@@ -2,6 +2,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { signInWithGoogle } from "../firebase";
+
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -9,6 +12,8 @@ export default function LoginPage() {
         username: "",
         password: "",
     });
+    const [error, setError] = useState("");
+    const [token, setToken] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -24,6 +29,21 @@ export default function LoginPage() {
             ...prev,
             [name]: value,
         }));
+    };
+
+    const handleGoogleLogin = async () => {
+        setError("");
+        try {
+            // 🔹 Firebase 로그인 실행
+            const idToken = await signInWithGoogle();
+            if (!idToken) throw new Error("Firebase 토큰을 가져오지 못했습니다.");
+
+            // 🔹 상태 업데이트
+            setToken(idToken);
+        } catch (err) {
+            console.error("❌ 로그인 에러:", err.message);
+            setError(err.message);
+        }
     };
 
     return (
@@ -122,7 +142,16 @@ export default function LoginPage() {
                         >
                             로그인
                         </button>
+
+                        
                     </form>
+                    {/* 테스트 */}
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="w-full flex justify-center py-3 px-4 rounded-lg text-white bg-[#717BFF] hover:bg-[#5A60FF] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#717BFF] transition-all duration-200 font-medium text-sm shadow-lg shadow-[#717BFF]/30"
+                    >
+                        구글 로그인
+                    </button>
                 </div>
             </div>
         </div>
