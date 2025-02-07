@@ -40,6 +40,36 @@ export default function LoginPage() {
 
             // 🔹 상태 업데이트
             setToken(idToken);
+
+            const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+                method: "POST",
+                // headers: {
+                //     "Authorization": `Bearer ${idToken}`,
+                // },
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ firebase_token: idToken })
+            });
+
+            // if (!response.ok) throw new Error("서버에서 응답을 받지 못했습니다.");
+
+            const data = await response.json();
+            console.log("✅ 로그인 응답:", data);
+            
+            if (data.code === 200 && data.data) {
+                const { access_token, refresh_token } = data.data;
+    
+                // 🔹 토큰을 localStorage에 저장
+                localStorage.setItem("access_token", access_token);
+                localStorage.setItem("refresh_token", refresh_token);
+    
+                // 🔹 사용자 정보를 저장하고 상태 업데이트 (예: 전역 상태 관리 도입 가능)
+                // setUser(data.user); // 사용자 정보 저장
+    
+                // 🔹 대시보드 페이지로 이동
+                router.push("/dashboard");
+            } else {
+                throw new Error(data.msg || "로그인 실패");
+            }
         } catch (err) {
             console.error("❌ 로그인 에러:", err.message);
             setError(err.message);
