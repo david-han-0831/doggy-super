@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import Cookies from 'js-cookie';
+import { usePublicAxios } from "../../hooks/userPublicAxios"; // 절대 경로 사용 (jsconfig.json 또는 tsconfig.json 설정에 따라)
+import { useAuth } from "../../context/AuthContext"; // 필요시 전역 상태 초기화를 위해
 
 const navigation = [
     {
@@ -95,6 +96,8 @@ export default function DashboardLayout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
+    const axiosPublic = usePublicAxios(); // 인증 없이 사용할 public axios 인스턴스
+    const { setAccessToken } = useAuth(); // 전역 인증 상태 초기화 (필요시 사용)
     
     // 테마 관련 상태 추가
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -125,13 +128,16 @@ export default function DashboardLayout({ children }) {
 
     const currentPage = navigation.find(item => item.href === pathname);
 
-    const handleLogout = () => {
-        // TODO: 실제 로그아웃 처리 (토큰 제거 등)
-        // localStorage.removeItem('token');
-        // sessionStorage.clear();
-        
-        // 로그인 페이지로 리다이렉트
-        router.push('/');
+    const handleLogout = async () => {
+        try {
+            // 로그아웃 엔드포인트 호출 시 withCredentials 옵션을 true로 하여 httpOnly 쿠키(Refresh Token)가 전송되도록 함
+            await axiosPublic.post("/auth/logout", {}, { withCredentials: true });
+        } catch (error) {
+            console.error("로그아웃 요청 에러:", error);
+        }
+        // 전역 상태에서 access token 등 인증 정보를 초기화할 수 있다면 처리 (예: setAccessToken(null);)
+        // 그리고 로그인 페이지(또는 초기 화면)로 리다이렉트
+        router.push("/");
     };
 
     return (

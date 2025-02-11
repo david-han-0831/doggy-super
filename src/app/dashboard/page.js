@@ -1,6 +1,8 @@
 "use client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 
 // 임시 데이터
 const MOCK_STATS = {
@@ -38,6 +40,22 @@ const MOCK_STATS = {
 };
 
 export default function DashboardPage() {
+    const { accessToken } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        // 로그인 상태가 아니면 로그인 페이지로 이동
+        if (!accessToken) {
+            alert("로그인 상태가 아닙니다.");   
+            router.push("/");
+        }
+    }, [accessToken, router]);
+
+    // 로그인 상태가 아니면 로그인 페이지로 이동
+    if (!accessToken) {
+        return null;
+    }
+
     return (
         <DashboardLayout>
             <div className="space-y-6">
