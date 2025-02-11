@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }) {
     const pathname = usePathname();
     const router = useRouter();
     const axiosPublic = usePublicAxios(); // 인증 없이 사용할 public axios 인스턴스
-    const { setAccessToken } = useAuth(); // 전역 인증 상태 초기화 (필요시 사용)
+    const { user, setAccessToken } = useAuth(); // 전역 인증 상태 초기화 (필요시 사용)
     
     // 테마 관련 상태 추가
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -128,6 +128,7 @@ export default function DashboardLayout({ children }) {
 
     const currentPage = navigation.find(item => item.href === pathname);
 
+    // 로그아웃 함수
     const handleLogout = async () => {
         try {
             // 로그아웃 엔드포인트 호출 시 withCredentials 옵션을 true로 하여 httpOnly 쿠키(Refresh Token)가 전송되도록 함
@@ -215,8 +216,11 @@ export default function DashboardLayout({ children }) {
                             )}
                         </button>
 
+                        {/* 사용자 정보 출력 */}
                         <span className="text-sm text-gray-700 dark:text-gray-200">
-                            <span className="text-base font-bold mr-1">홍길동</span>
+                            <span className="text-base font-bold mr-1">
+                                {user? user.display_name : "Guest"}
+                            </span>
                             님 환영합니다
                         </span>
                         <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />

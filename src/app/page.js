@@ -52,18 +52,6 @@ export default function LoginPage() {
             });
             const data = response.data;
             console.log("✅ 로그인 응답:", data);
-            // const response = await fetch("http://localhost:8000/api/v1/auth/login", {
-            //     method: "POST",
-            //     // headers: {
-            //     //     "Authorization": `Bearer ${idToken}`,
-            //     // },
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ firebase_token: idToken })
-            // });
-
-            // if (!response.ok) throw new Error("서버에서 응답을 받지 못했습니다.");
-
-            
             
             if (data.code === 200 && data.data) {
                 const { access_token } = data.data;
@@ -74,14 +62,15 @@ export default function LoginPage() {
                 const decodedToken = jwtDecode(access_token);
                 console.log("디코드된 토큰:", decodedToken);
                 
-                router.push("/dashboard");
+                // 'superadmin', 'admin_staff'
                 // 예시: role이 "superadmin"이면 dashboard 페이지로 이동
-                // if (decodedToken.role === "superadmin") {
-                //     router.push("/dashboard");
-                // } else {
-                //     // 다른 역할일 경우 원하는 페이지로 이동
-                //     router.push("/");
-                // }
+                if (decodedToken.role !== "superadmin" && decodedToken.role !== "admin_staff") {
+                    alert("로그인 권한이 없습니다. doggy-admin 페이지로 이동합니다.");
+                    router.push("http://localhost:3001");
+                } else {
+                    // 다른 역할일 경우 원하는 페이지로 이동
+                    router.push("/dashboard");
+                }
 
             } else {
                 throw new Error(data.msg || "로그인 실패");
